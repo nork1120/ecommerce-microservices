@@ -1,0 +1,56 @@
+server:
+  port: 8084
+spring:
+  config:
+    import:
+      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
+
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:mysql://localhost:3310/order_db?useSSL=false&serverTimezone=Asia/Taipei&allowPublicKeyRetrieval=true
+    username: order_app
+    password: ${ORDER_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  flyway:
+    enabled: true
+    locations:
+      - classpath:migration
+    baseline-on-migrate: true
+
+mybatis:
+  mapper-locations:
+    - classpath:/mapper/*.xml
+  type-aliases-package: com.company.ecommerce.orderservice.model
+
+services:
+  cart-service:
+   url: http://localhost:8083
+
+  product-service:
+   url: http://localhost:8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: false
+
+logging:
+  level:
+    com.company.ecommerce.order.mapper: debug

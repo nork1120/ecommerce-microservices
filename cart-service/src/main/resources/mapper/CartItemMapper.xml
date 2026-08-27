@@ -1,0 +1,94 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.ecommerce.cartservice.mapper.CartItemMapper">
+    <resultMap id="CartItemResulMap" type="com.company.ecommerce.cartservice.model.CartItem">
+        <id property="id" column="id"/>
+        <result property="cartId" column="cart_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="skuCode" column="sku_code"/>
+        <result property="productName" column="product_name"/>
+        <result property="mainImageUrl" column="main_image_url"/>
+        <result property="quantity" column="quantity"/>
+        <result property="selected" column="selected"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="unitPrice" column="unit_price"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <insert id="insertCartItem"
+            parameterType="com.company.ecommerce.cartservice.model.CartItem"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        insert into cart_items(cart_id,product_id, sku_code,
+                               product_name, main_image_url,
+                               unit_price, quantity,
+                               selected
+        ) values (#{cartId},#{productId},#{skuCode},
+                  #{productName},#{mainImageUrl},
+                  #{unitPrice},#{quantity},
+                  #{selected}
+                 )
+    </insert>
+
+    <select id="findByCartItemId" resultMap="CartItemResulMap">
+        select * from cart_items
+        where id = #{cartItemId}
+    </select>
+
+    <select id="findByCartIdAndProductId" resultMap="CartItemResulMap">
+    select * from cart_items WHERE product_id = #{productId}
+                               AND cart_id = #{cartId}
+    </select>
+    
+    <select id="findByCartId" resultMap="CartItemResulMap" >
+        select * from cart_items WHERE cart_id = #{cartId}
+    </select>
+
+    <select id="findByCartIdAndSelected" resultMap="CartItemResulMap" >
+        select * from cart_items WHERE cart_id = #{cartId}
+        AND selected = 1
+    </select>
+    
+    <update id="updateQuantity" >
+        update cart_items
+        set quantity = #{quantity}
+        WHERE id = #{id}
+    </update>
+    
+    <update id="increaseQuantity" >
+        update cart_items
+        set quantity = quantity + #{quantity}
+        WHERE id = #{id}
+    </update>
+
+    <update id="decreaseQuantity">
+        update cart_items
+        set quantity = quantity - #{quantity}
+        where id = #{id}
+    </update>
+
+    <update id="updateCartItemSelected">
+        update cart_items
+        set selected = #{selected}
+        where id = #{cartItemId}
+    </update>
+
+    <delete id="deleteById" >
+        delete from cart_items
+        WHERE id = #{id}
+    </delete>
+    
+    <delete id="deleteByCartId">
+        delete from cart_items
+        WHERE cart_id = #{cartId}
+    </delete>
+
+    <update id="updateQuantityByCardIdAndProductId">
+        update cart_items
+        set quantity = #{quantity}
+        WHERE cart_id = #{cartId}
+        AND product_id = #{productId}
+    </update>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.company.ecommerce.productservice.mapper.product.CategoryMapper">
+    <resultMap id="CategoryResultMap" type="com.company.ecommerce.productservice.model.Category">
+        <id property="id" column="id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="parentId" column="parent_id" />
+        <result property="level" column="level" />
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+  <insert id="insert"
+          parameterType="com.company.ecommerce.productservice.model.Category"
+          useGeneratedKeys="true"
+          keyProperty="id">
+      insert into category(
+                           category_name,
+                           parent_id,
+                           level,
+                           sort_order
+      ) VALUES ( #{categoryName},
+                #{parentId},
+                #{level},
+                #{sortOrder})
+  </insert>
+
+    <select id="getCategoryById" resultMap="CategoryResultMap">
+        select * from category
+        where id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="CategoryResultMap">
+        select id, category_name, parent_id, level, sort_order from category
+    </select>
+
+    <select id="selectAllLevelOne" resultMap="CategoryResultMap">
+        select id, category_name, parent_id, level, sort_order
+        from category
+        where level = 1
+    </select>
+
+    <select id="selectTreeStructuredCategoriesId" resultMap="CategoryResultMap">
+        WITH RECURSIVE category_tree AS (
+            -- 1. 基礎錨點：先找出起點
+            SELECT id, category_name, parent_id
+            FROM category
+            WHERE category_name = #{categoryName}  -- 這裡輸入你想查詢類別名稱
+
+            UNION ALL
+
+            -- 2. 遞迴成員：拿上一次找到的 id，去對照下一層的 parent_id
+            SELECT c.id, c.category_name, c.parent_id
+            FROM category c
+                     INNER JOIN category_tree ct ON c.parent_id = ct.id
+        )
+-- 3. 最後把整棵樹的資料倒出來
+        SELECT * FROM category_tree;
+    </select>
+
+</mapper>

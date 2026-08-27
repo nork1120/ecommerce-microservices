@@ -1,0 +1,31 @@
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+**/application-local.yaml
+**/application-local.yml
+**/application-local.properties
+
+# IDE and editor files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Build output
+**/target/
+**/build/
+
+# Local database storage
+my_db_data/
+
+# Logs and operating-system files
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Local Codex metadata
+.agents/
+.codex/

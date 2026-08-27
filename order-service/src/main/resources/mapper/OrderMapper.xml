@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.company.ecommerce.orderservice.mapper.OrderMapper">
+    <resultMap id="OrderResultMap" type="com.company.ecommerce.orderservice.model.Orders">
+        <id property="id" column="id"/>
+        <result property="orderNo" column="order_no"/>
+        <result property="userId" column="user_id"/>
+        <result property="totoAmount" column="toto_amount"/>
+        <result property="status" column="status"/>
+        <result property="paymentDeadline" column="payment_deadline"/>
+        <result property="receiverName" column="receiver_name"/>
+        <result property="receiverPhone" column="receiver_phone"/>
+        <result property="receiverAddress" column="receiver_address"/>
+        <result property="paymentMethod" column="payment_method"/>
+        <result property="remark" column="remark"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+
+    <insert id="insert"
+            parameterType="com.company.ecommerce.orderservice.model.Orders"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO orders(
+        order_no,
+        user_id,
+        toto_amount,
+        receiver_name,
+        receiver_phone,
+        receiver_address,
+        payment_method,
+        remark,
+        payment_deadline
+
+        <if test='paymentMethod == "cod"'>
+            ,status
+        </if>
+        ) VALUES (
+        #{orderNo},
+        #{userId},
+        #{totoAmount},
+        #{receiverName},
+        #{receiverPhone},
+        #{receiverAddress},
+        #{paymentMethod},
+        #{remark},
+        date_add(now(),interval 15 minute )
+        <if test='paymentMethod == "cod"'>
+            ,#{status}
+        </if>
+        )
+    </insert>
+
+    <select id="findById" resultMap="OrderResultMap">
+        select *
+        from orders
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByOrderNo" resultMap="OrderResultMap">
+        select *
+        from orders
+        WHERE order_no = #{orderNo}
+    </select>
+
+    <select id="findOrderAllByUserId" resultMap="OrderResultMap">
+        select *
+        from orders
+        WHERE user_id = #{userId}
+    </select>
+
+    <update id="updateOrderStatus">
+        update orders
+        set status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <update id="cancelExpiredOrders">
+        update orders
+        set status = 'CANCELLED'
+        where status = 'CREATED'
+          and payment_deadline &lt; now()
+    </update>
+
+    <select id="selectExpiredOrderIds" resultType="long">
+        select orders.id
+        from orders
+        where status = 'CREATED'
+          and payment_deadline &lt; now()
+    </select>
+
+    <update id="orderStatusShipment">
+        update orders
+        set status = 'SHIPPED'
+        where status = 'PAID'
+        and order_no IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

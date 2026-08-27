@@ -1,0 +1,93 @@
+services:
+  user-mysql:
+    image: mysql:8.4
+    container_name: user-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: user_app
+      MYSQL_PASSWORD: ${USER_DB_PASSWORD}
+      TZ: Asia/Taipei
+    ports:
+      - "3307:3306"
+    networks:
+      - ecommerce-network
+    volumes:
+#      - user_mysql_data:/var/lib/mysql
+      - ./my_db_data/user:/var/lib/mysql
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+  product-mysql:
+    image: mysql:8.4
+    container_name: product_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: product_db
+      MYSQL_USER: product_app
+      MYSQL_PASSWORD: ${PRODUCT_DB_PASSWORD}
+      TZ: Asia/Taipei
+    ports:
+      - "3308:3306"
+    networks:
+      - ecommerce-network
+    volumes:
+#      - product_mysql_data:/var/lib/mysql
+      - ./my_db_data/product:/var/lib/mysql
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+  cart-mysql:
+    image: mysql:8.4
+    container_name: cart_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: cart_db
+      MYSQL_USER: cart_app
+      MYSQL_PASSWORD: ${CART_DB_PASSWORD}
+      TZ: Asia/Taipei
+    ports:
+      - "3309:3306"
+    networks:
+      - ecommerce-network
+    volumes:
+#      - cart_mysql_data:/var/lib/mysql
+      - ./my_db_data/cart:/var/lib/mysql
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+  order-mysql:
+    image: mysql:8.4
+    container_name: order_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: order_db
+      MYSQL_USER: order_app
+      MYSQL_PASSWORD: ${ORDER_DB_PASSWORD}
+      TZ: Asia/Taipei
+    ports:
+      - "3310:3306"
+    networks:
+      - ecommerce-network
+    volumes:
+#      - order_mysql_data:/var/lib/mysql
+      - ./my_db_data/order:/var/lib/mysql
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+
+networks:
+  ecommerce-network:
+    name: my-microservices
+    driver: bridge
+
+
+
+
+
+
+

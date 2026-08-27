@@ -1,8 +1,8 @@
 package com.company.ecommerce.orderservice.servicer.impl;
 
 import com.company.ecommerce.orderservice.client.CartClient;
-import com.company.ecommerce.orderservice.client.dto.CartItemResponse;
-import com.company.ecommerce.orderservice.client.dto.CartResponse;
+import com.company.ecommerce.orderservice.client.ProductClient;
+import com.company.ecommerce.orderservice.client.dto.*;
 import com.company.ecommerce.common.dto.ApiResponse;
 import com.company.ecommerce.orderservice.dto.projection.ProductQuantitySummary;
 import com.company.ecommerce.orderservice.dto.request.CreateOrderRequest;
@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 public class OrderServiceImpl implements OrderService {
 
     private final CartClient cartClient;
+    private final ProductClient productClient;
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
     private final CircuitBreakerFactory circuitBreakerFactory;
@@ -78,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
 
         Orders order;
 
-       /// 判斷付款方式
+        /// 判斷付款方式
         if (Objects.equals(request.getPaymentMethod(), "cod")) {
             order = Orders.builder()
                     .orderNo(order_on.toString())
@@ -135,11 +136,32 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("訂單明細批量新增失敗");
         }
 
-        ApiResponse<Void> voidApiResponse = cartClient.deleteCartSelectedItem(id);
+        List<DeductionProductStock> deductionProductStocks = orderItems.stream().map(item ->
+                DeductionProductStock.builder()
+                        .id(item.getProductId())
+                        .quantity(item.getQuantity()).build()
+        ).toList();
 
-        log.info("voidApiResponse={}", voidApiResponse);
+        ApiResponse<Integer> integerApiResponse = productClient.deductionProductStock(deductionProductStocks);
 
-        log.info("orderId={}, insertedItemCount={}", order.getId(), insertedItemCount);
+        log.info("integerApiResponse={}", integerApiResponse.getData());
+        try {
+            ApiResponse<Void> voidApiResponse = cartClient.deleteCartSelectedItem(id);
+            log.info("voidApiResponse={}", voidApiResponse);
+        } catch (Exception e) {
+            List<ReplenishProductQuantityRequest> replenishProductQuantityRequestList = orderItems.stream().map(item ->
+                    ReplenishProductQuantityRequest.builder()
+                            .productId(item.getProductId())
+                            .quantity(item.getQuantity())
+                            .build()
+            ).toList();
+            ListReplenishProductQuantityRequest listReplenishProductQuantityRequest = new ListReplenishProductQuantityRequest();
+            listReplenishProductQuantityRequest.setReplenishProductQuantityRequestList(replenishProductQuantityRequestList);
+            ApiResponse<Integer> integerApiResponse1 = productClient.setProductStockInProductIdIsQuantity(listReplenishProductQuantityRequest);
+            log.info("integerApiResponse1!!!!!!!!!!!!!!={}", integerApiResponse1.getData());
+            throw new IllegalArgumentException(e);
+        }
+
 
         return ApiResponse.success("新增成功", order.getId(), 200);
     }

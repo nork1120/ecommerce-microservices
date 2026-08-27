@@ -38,12 +38,12 @@ public class OrderExpiredScheduler {
         }
 
         List<ReplenishProductQuantityRequest> items = productQuantitySummaries.stream()
-                .map(summary -> {
-                    ReplenishProductQuantityRequest request = new ReplenishProductQuantityRequest();
-                    request.setProductId(summary.getProductId());
-                    request.setQuantity(summary.getQuantity());
-                    return request;
-                })
+                .map(summary ->
+                        ReplenishProductQuantityRequest.builder()
+                                .productId(summary.getProductId())
+                                .quantity(summary.getQuantity())
+                                .build()
+                )
                 .toList();
 
         ListReplenishProductQuantityRequest request = new ListReplenishProductQuantityRequest();

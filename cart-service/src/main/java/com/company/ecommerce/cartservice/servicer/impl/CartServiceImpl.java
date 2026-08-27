@@ -473,10 +473,10 @@ public class CartServiceImpl implements CartService {
         int i = cartItemMapper.deleteCartSelectedItem(userCartId.getId());
 
         if (i == byCartIdAndSelected.size()) {
-            log.info("商品數量符合測是用log");
+            log.info("商品數量符合測是用log 有進來就是符合該刪除的數量");
         }
 
-        log.info("i={}", i);
+
 
     }
 

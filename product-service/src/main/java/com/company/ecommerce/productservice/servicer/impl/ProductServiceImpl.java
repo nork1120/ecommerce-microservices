@@ -181,6 +181,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateQuantity(List<DeductionStock> deductionStock) {
+        log.info("deductionStock={}", deductionStock);
         return productMapper.findByIdDeductTheStock(deductionStock);
     }
 

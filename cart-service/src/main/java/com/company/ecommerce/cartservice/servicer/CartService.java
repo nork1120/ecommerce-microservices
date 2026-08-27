@@ -78,6 +78,12 @@ public interface CartService {
     void deleteItem(Long userID,Long productID);
 
     /**
+     * 刪除購物車內已被選定的商品明細(結帳用:結帳後刪除購物車內已選定的商品)
+     * @param userID
+     */
+    void deleteCartSelectedItem(Long userID);
+
+    /**
      * 清空用戶購物車內所有商品
      * @param userID
      */

@@ -462,6 +462,24 @@ public class CartServiceImpl implements CartService {
         return userCartId.getId();
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteCartSelectedItem(Long userID) {
+
+        Cart userCartId = getOrCreateCart(userID);
+
+        List<CartItem> byCartIdAndSelected = cartItemMapper.findByCartIdAndSelected(userCartId.getId());
+
+        int i = cartItemMapper.deleteCartSelectedItem(userCartId.getId());
+
+        if (i == byCartIdAndSelected.size()) {
+            log.info("商品數量符合測是用log");
+        }
+
+        log.info("i={}", i);
+
+    }
+
     private Cart getOrCreateCart(Long userID) {
         Cart activeCart = cartMapper.findActiveCartUserId(userID);
 

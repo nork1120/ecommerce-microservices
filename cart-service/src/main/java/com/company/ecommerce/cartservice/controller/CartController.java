@@ -138,4 +138,10 @@ public class CartController {
         return ApiResponse.success("Cart cleared", null, 200);
     }
 
+    @DeleteMapping("/deleteCartSelectedItem")
+    public ApiResponse<Void> deleteCartSelectedItem(@RequestHeader("X-User-Id") Long userID) {
+        cartService.deleteCartSelectedItem(userID);
+        return ApiResponse.success("Cart deleteSelected", null, 200);
+    }
+
 }

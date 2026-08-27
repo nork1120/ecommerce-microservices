@@ -19,6 +19,8 @@ public interface CartClient {
     ApiResponse<Void> removeItem(@RequestHeader("X-User-Id") Long userId,
                                  @PathVariable("id") Long id);
 
+    @DeleteMapping("/api/cart/deleteCartSelectedItem")
+    ApiResponse<Void> deleteCartSelectedItem(@RequestHeader("X-User-Id") Long userId);
 
 
 }

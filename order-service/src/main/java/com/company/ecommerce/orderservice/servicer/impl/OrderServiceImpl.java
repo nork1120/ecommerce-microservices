@@ -135,6 +135,10 @@ public class OrderServiceImpl implements OrderService {
             throw new IllegalStateException("訂單明細批量新增失敗");
         }
 
+        ApiResponse<Void> voidApiResponse = cartClient.deleteCartSelectedItem(id);
+
+        log.info("voidApiResponse={}", voidApiResponse);
+
         log.info("orderId={}, insertedItemCount={}", order.getId(), insertedItemCount);
 
         return ApiResponse.success("新增成功", order.getId(), 200);

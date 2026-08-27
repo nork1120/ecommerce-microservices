@@ -28,6 +28,7 @@ public interface CartItemMapper {
 
     /**
      * 用購物車明細ID 查詢商品
+     *
      * @param cartItemId
      * @return
      */
@@ -61,6 +62,7 @@ public interface CartItemMapper {
 
     /**
      * 修改購物車內商品 選定狀態 Selected
+     *
      * @param cartItemId
      * @param selected
      * @return
@@ -78,6 +80,7 @@ public interface CartItemMapper {
 
     /**
      * 依購物車明細 id 將 quantity 加上減掉數量。
+     *
      * @param id
      * @param quantity
      * @return
@@ -110,5 +113,12 @@ public interface CartItemMapper {
      * @return
      */
     int updateQuantityByCardIdAndProductId(@Param("cartId") Long cartId, @Param("productId") Long productId, @Param("quantity") Integer quantity);
+
+    /**
+     * 刪除指定cartId購物車商品selected = 1 的資料
+     * @param cartId
+     * @return
+     */
+    int deleteCartSelectedItem(@Param("cartId") Long cartId);
 
 }
